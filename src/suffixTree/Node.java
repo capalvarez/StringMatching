@@ -1,36 +1,40 @@
 package suffixTree;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Node {
-	int begin;
-	int end;
-	int depth; 
-	Node parent;
-	Node[] children;
-	Node suffixLink;
-	boolean isLeaf;
+    private Node suffixLink;
+    private Map<Character, Edge> children;
+
+    public Node(Node suffixLink){
+        this.suffixLink = suffixLink;
+        children = new HashMap<Character, Edge>();
+    }
+
+    public void addEdge(char charToAdd, Edge edge){
+        children.put(charToAdd, edge);
+    }
+
+    public void removeEdge(char charToRemove){
+        children.remove(charToRemove);
+    }
+
+    public Edge findEdge(char ch){
+        return children.get(ch);
+    }
+
+    public Node getSuffixLink(){
+        return suffixLink;
+    }
+
+    public void setSuffixLink(Node suffixLink){
+        this.suffixLink = suffixLink;
+    }
+
+    public Collection<Edge> getEdges(){
+        return children.values();
+    }
 	
-	public Node(int begin, int end, int depth, Node parent, int childNum) {
-		this.begin = begin;
-		this.end = end;
-		this.parent = parent;
-		this.depth = depth;
-		
-		children = new Node[childNum];
-	}
-	
-	public Node findNode(int begin, int end){
-		return null;
-	}
-	
-	public boolean hasChild(int i){
-		return children[i]!=null;
-	}
-	
-	public boolean isLeaf(){
-		return isLeaf;
-	}
-	
-	public void implicitAdd(){
-		end = -1;
-	}
 }
