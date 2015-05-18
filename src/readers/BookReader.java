@@ -6,9 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class BookReader {
-	String oneLinebook;
-	
-	
+	private String oneLinebook;
+		
 	public BookReader(File bookFile) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(bookFile));    
 		
@@ -30,6 +29,10 @@ public class BookReader {
 		 }finally{
 			 br.close();
 		 }	
+	}
+	
+	public String getBook(){
+		return oneLinebook;
 	}
 	
 }

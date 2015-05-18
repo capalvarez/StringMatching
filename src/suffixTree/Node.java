@@ -25,6 +25,10 @@ public class Node {
         return children.get(ch);
     }
 
+    public boolean isLeaf(){
+    	return children.size()==0;
+    }
+    
     public Node getSuffixLink(){
         return suffixLink;
     }
@@ -37,4 +41,5 @@ public class Node {
         return children.values();
     }
 	
+    
 }

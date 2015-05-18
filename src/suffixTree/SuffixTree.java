@@ -1,5 +1,7 @@
 package suffixTree;
 
+import java.util.ArrayList;
+
 public class SuffixTree {
 	private String text;
     private Node root;
@@ -41,23 +43,23 @@ public class SuffixTree {
                 parentNode = edge.splitEdge(active,text);
             }
 
-            // We didn't find a matching edge, so we create a new one, add it to the tree at the parent node position,
-            // and insert it into the hash table.  When we create a new node, it also means we need to create
-            // a suffix link to the new node from the last node we visited.
-            Edge newEdge = new Edge(endIndex, text.length() - 1, parentNode);
-            newEdge.insert();
+            Edge newEdge = new Edge(parentNode,endIndex, text.length() - 1);
+            newEdge.getBeginNode().addEdge(text.charAt(endIndex), newEdge);
+    
             updateSuffixNode(lastParentNode, parentNode);
             lastParentNode = parentNode;
 
-            if (active.getNode() == root)
+            if(active.getNode() == root){
                 active.increaseBegin();
-            else
-                active.changeOriginNode();
-            active.canonize();
+            }else{
+            	 active.setInitNode();
+            }
+               
+            active.canonize(text);
         }
         updateSuffixNode(lastParentNode, parentNode);
-        active.incEndIndex();   //Now the endpoint is the next active point
-        active.canonize();
+        active.increaseEnd();   
+        active.canonize(text);
     }
 
     private void updateSuffixNode(Node node, Node suffixLink){
@@ -78,5 +80,44 @@ public class SuffixTree {
         return nodesCount++;
     }
     
-    
+    public ArrayList<Integer> search(String pattern){
+		int index = -1;
+		Node node = root;
+
+		int i = 0;
+		while (i < pattern.length()){
+			if ((node == null) || (i == text.length()))
+				return new ArrayList<Integer>();
+
+			Edge edge = node.findEdge(pattern.charAt(i));
+			if (edge == null)
+				return new ArrayList<Integer>();
+
+			index = edge.getBeginIndex() - i;
+			i++;
+
+			for (int j = edge.getBeginIndex() + 1; j <= edge.getEndIndex(); j++) {
+				if (i == pattern.length())
+					break;
+				if (text.charAt(j) != pattern.charAt(i))
+					return new ArrayList<Integer>();
+				i++;
+			}
+			node = edge.getEndNode();
+		}
+		
+		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		
+		if(node.isLeaf()){
+			indexes.add(index);
+		}else{
+						
+			
+			while(!node.isLeaf()){
+				
+			}
+		}
+		
+		return indexes;
+	}
 }

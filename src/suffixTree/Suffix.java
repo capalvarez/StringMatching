@@ -44,22 +44,22 @@ public class Suffix {
 		return endIndex >= beginIndex;
 	}
 
-	/*public void canonize() {
+	public void canonize(String text) {
 		if (!isExplicit()) {
-			Edge edge = originNode.findEdge(originNode.charAt(beginIndex));
+			Edge edge = initNode.findEdge(text.charAt(beginIndex));
 
-			int edgeSpan = edge.getSpan();
-			while (edgeSpan <= getSpan()) {
+			int edgeSpan = edge.getSubstringLength();
+			while (edgeSpan <= getSubstringLength()) {
 				beginIndex += edgeSpan + 1;
-				originNode = edge.getEndNode();
+				initNode = edge.getEndNode();
+				
 				if (beginIndex <= endIndex) {
-					edge = edge.getEndNode().findEdge(
-							originNode.charAt(beginIndex));
-					edgeSpan = edge.getSpan();
+					edge = edge.getEndNode().findEdge(text.charAt(beginIndex));
+					edgeSpan = edge.getSubstringLength();
 				}
 			}
 		}
-	}*/
+	}
 
 	public int getSubstringLength() {
 		return endIndex - beginIndex;

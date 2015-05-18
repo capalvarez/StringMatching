@@ -1,35 +1,39 @@
 package automata;
 
+import java.util.ArrayList;
+
 public class AutomataConstructor {
 	private String pattern;
-	private char[] alphabet;
+	private ArrayList<Character> alphabet;
 	private int[][] deltaFunction;
+
 	
-	public AutomataConstructor(String p, char[] alphabet){
+	public AutomataConstructor(String p, ArrayList<Character> alphabet){
 		pattern = p;
 		this.alphabet = alphabet;
 	
-		cubicConstructor();
+		cubicConstructor();		
 	}
 	
 	public void cubicConstructor(){
 		int m = pattern.length();
-		deltaFunction = new int[alphabet.length][m];
+		deltaFunction = new int[m+1][alphabet.size()];
 		
-		for(int q=0;q<m;q++){
+		for(int q=0;q<=m;q++){
 			for(char a: alphabet){
 				int k = Math.min(m+1,q+2);
-				
+								
 				String Pk;
 				String Pq;
 				
 				do{
-					k--;
-					Pk = pattern.substring(0,k+1);
-					Pq = pattern.substring(0,q+1);
-				}while(Pk.endsWith(Pq + a));
+					k = k - 1;
+					
+					Pk = pattern.substring(0,k);
+					Pq = pattern.substring(0,q);
+				}while(!(Pq + a).endsWith(Pk));
 			
-				deltaFunction[q][a] = k;
+				deltaFunction[q][alphabet.indexOf(a)] = k;
 			}
 		}
 	}
