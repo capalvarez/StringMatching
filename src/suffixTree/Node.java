@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Node {
+public class Node{
     private Node suffixLink;
     private Map<Character, Edge> children;
 
@@ -26,7 +26,7 @@ public class Node {
     }
 
     public boolean isLeaf(){
-    	return children.size()==0;
+     	return children.size()==0;
     }
     
     public Node getSuffixLink(){
@@ -41,5 +41,8 @@ public class Node {
         return children.values();
     }
 	
+    public Map<Character, Edge> getChildren(){
+    	return children;
+    }
     
 }

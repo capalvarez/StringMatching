@@ -60,7 +60,11 @@ public class Edge {
 	}
 
 	public String toString(){
-		return endNode.toString();
+		return beginIndex + " " + endIndex ;
+	}
+	
+	public String printSubstring(String text){
+		return text.substring(beginIndex, endIndex+1);
 	}
 }
 

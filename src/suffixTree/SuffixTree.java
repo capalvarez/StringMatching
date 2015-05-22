@@ -1,10 +1,13 @@
 package suffixTree;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 public class SuffixTree {
 	private String text;
-    private Node root;
+    public Node root;
     private int nodesCount;
 
     public SuffixTree(String text) {
@@ -60,8 +63,8 @@ public class SuffixTree {
         updateSuffixNode(lastParentNode, parentNode);
         active.increaseEnd();   
         active.canonize(text);
-    }
-
+    }   
+    
     private void updateSuffixNode(Node node, Node suffixLink){
         if ((node != null) && (node != root)){
             node.setSuffixLink(suffixLink);
@@ -85,10 +88,10 @@ public class SuffixTree {
 		Node node = root;
 
 		int i = 0;
-		while (i < pattern.length()){
+		while (i < pattern.length()){					
 			if ((node == null) || (i == text.length()))
-				return new ArrayList<Integer>();
-
+				return new ArrayList<Integer>();		
+			
 			Edge edge = node.findEdge(pattern.charAt(i));
 			if (edge == null)
 				return new ArrayList<Integer>();
@@ -104,19 +107,22 @@ public class SuffixTree {
 				i++;
 			}
 			node = edge.getEndNode();
+			 System.out.println(" ");
 		}
 		
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		
-		if(node.isLeaf()){
+		//for (Iterator<Edge> it = children.iterator(); it.hasNext(); ){
+		    // System.out.println(it.next().toString());
+		//}
+		
+		//if(node.isLeaf()){
 			indexes.add(index);
-		}else{
-						
-			
-			while(!node.isLeaf()){
+		//}else{	
+			//while(!node.isLeaf()){
 				
-			}
-		}
+			//}
+		//}
 		
 		return indexes;
 	}

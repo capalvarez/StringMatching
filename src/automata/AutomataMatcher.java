@@ -21,9 +21,7 @@ public class AutomataMatcher {
 		ArrayList<Character> alphabet = new ArrayList<Character>(Arrays.asList(chars));
 		
 		int[][] deltaFunction = (new AutomataConstructor(pattern,alphabet)).getDeltaFunction();
-		
-		System.out.println(Arrays.deepToString(deltaFunction));
-		
+				
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		
 		int m = pattern.length();
