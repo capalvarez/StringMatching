@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Node{
-	private HashMap<Edge,Node> children;
+	private HashMap<Edge,Node> children = new HashMap<Edge,Node>();
 	private ArrayList<Integer> occurrences = new ArrayList<Integer>();
 	private boolean isLeaf = false;
 	
@@ -21,6 +21,12 @@ public class Node{
 	}
 	
 	public Edge getEdge(String sub){
+		for(Edge e: children.keySet()){
+			if(sub.startsWith(e.getValue()) || sub.equals(e.getValue())){
+				return e;	
+			}
+		}
+		
 		return null;
 	}
 
@@ -46,7 +52,7 @@ public class Node{
 			return new PrefixRes();
 		}
 				
-		if(sToFind.length()<=usefulEdge.getSubstringLength()){
+		if(sToFind.length()<usefulEdge.getSubstringLength()){
 			PrefixRes r = new PrefixRes(usefulEdge);
 			
 			if(usefulEdge.getValue().startsWith(sToFind)){
@@ -62,7 +68,10 @@ public class Node{
 				return usefulEdge.getEndNode().getChildFromPrefix(
 						sToFind.substring(usefulEdge.getSubstringLength(), sToFind.length()));
 			}else{
-				return new PrefixRes();
+				PrefixRes r = new PrefixRes(usefulEdge);
+				r.setLength(getMaxCommonPrefix(sToFind,usefulEdge.getValue()).length());
+				
+				return r;
 			}
 		}	
 	}
@@ -71,7 +80,7 @@ public class Node{
 		int i = 0;
 		int minLength = Math.min(p1.length(), p2.length());
 		
-		while(p1.charAt(i)==p2.charAt(i) && i<minLength){
+		while(i<minLength && p1.charAt(i)==p2.charAt(i)){
 			i++;
 		}
 		
@@ -81,4 +90,22 @@ public class Node{
 	public ArrayList<Integer> getOccurrences(){
 		return occurrences;
 	}
+	
+	public void addOccurrence(int index){
+		occurrences.add(index);
+	}
+	
+	public int getChildrenNum(){
+		return children.keySet().size();
+	}
+	
+	/*public static void main(String[] args){
+		Node n = new Node();
+		n.addChild(new Node(), "catarata");
+		n.addChild(new Node(), "ascada");
+		n.addChild(new Node(),"bismo");
+		
+		System.out.println(n.getChildFromPrefix("bisa").getEdge().getValue());
+	}*/
+	
 }

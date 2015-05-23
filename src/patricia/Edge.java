@@ -11,6 +11,10 @@ public class Edge {
 		endNode = end;
 	}
 	
+	public Edge(String sub){
+		substring = sub;
+	}
+	
 	public String getValue(){
 		return substring;
 	}
@@ -30,6 +34,4 @@ public class Edge {
 	public Node getBeginNode(){
 		return beginNode;
 	}
-	
-	
 }
