@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Node{
-	private HashMap<Edge,Node> children = new HashMap<Edge,Node>();
-	private ArrayList<Integer> occurrences = new ArrayList<Integer>();
+	HashMap<Edge,Node> children = new HashMap<Edge,Node>();
+	private ArrayList<Integer> occurrences;
 	private boolean isLeaf = false;
+	
+	public Node(){
+		occurrences = new ArrayList<Integer>();
+	}
 	
 	public boolean isLeaf(){
 		return isLeaf;
@@ -41,6 +45,7 @@ public class Node{
 	
 	public PrefixRes getChildFromPrefix(String sToFind){
 		Edge usefulEdge = null;
+		
 		for(Edge e: children.keySet()){
 			if(e.getValue().charAt(0)==sToFind.charAt(0)){
 				usefulEdge = e;
@@ -65,8 +70,15 @@ public class Node{
 			return r;
 		}else{
 			if(sToFind.equals(usefulEdge.getValue())){
-				return usefulEdge.getEndNode().getChildFromPrefix(
-						sToFind.substring(usefulEdge.getSubstringLength(), sToFind.length()));
+				PrefixRes res = new PrefixRes(usefulEdge);
+				res.setLength(usefulEdge.getSubstringLength());
+				return res;
+			}
+						
+			if(sToFind.startsWith(usefulEdge.getValue())){
+				PrefixRes res = new PrefixRes(usefulEdge);
+				res.setLength(usefulEdge.getValue().length());
+				return res;
 			}else{
 				PrefixRes r = new PrefixRes(usefulEdge);
 				r.setLength(getMaxCommonPrefix(sToFind,usefulEdge.getValue()).length());
@@ -84,7 +96,7 @@ public class Node{
 			i++;
 		}
 		
-		return p1.substring(0,i+1);
+		return p1.substring(0,i);
 	}
 	
 	public ArrayList<Integer> getOccurrences(){
@@ -93,19 +105,11 @@ public class Node{
 	
 	public void addOccurrence(int index){
 		occurrences.add(index);
+		
 	}
 	
 	public int getChildrenNum(){
 		return children.keySet().size();
 	}
-	
-	/*public static void main(String[] args){
-		Node n = new Node();
-		n.addChild(new Node(), "catarata");
-		n.addChild(new Node(), "ascada");
-		n.addChild(new Node(),"bismo");
-		
-		System.out.println(n.getChildFromPrefix("bisa").getEdge().getValue());
-	}*/
 	
 }

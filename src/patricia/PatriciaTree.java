@@ -1,7 +1,7 @@
 package patricia;
 
 public class PatriciaTree {
-	Node treeRoot;
+	public Node treeRoot;
 	
 	public PatriciaTree(){
 		treeRoot = new Node();
@@ -12,38 +12,33 @@ public class PatriciaTree {
 		LookupRes res = lookup(word);
 				
 		if(res.getNode()!=null){
-			if(res.getNode().isLeaf()){
-				res.getNode().setAsNotLeaf();
-			}
-			System.out.println("en nodo");
-			System.out.println("hijos de este nodo " + res.getNode().getChildrenNum());
 			reinsert(res.getStringFound(), word, indexInText);	
-			
 		}else{
-			System.out.println("en arista");
 			reinsert(res.getStringFound()+res.getEdge().getValue(),word,indexInText);
-		}
+		}	
 	}
 	
 	public void reinsert(String p, String value, int indexInText){
 		String mcp = getMaxCommonPrefix(value,p);
-		//System.out.println("p " + p + " value "+ value + " mcp " + mcp);
 		LookupRes res = lookup(mcp);
 				
 		if(res.getNode()!=null){
 			if(res.getStringFound().equals(value)){
-				//System.out.println("palabra repetida");
 				res.getNode().addOccurrence(indexInText);
 			}else{
 				Node newNode = new Node();
 				newNode.setAsLeaf();
 				newNode.addOccurrence(indexInText);
-				//System.out.println("value " + value + " mcp " + mcp + " differ " + getDifference(value,mcp));
-				
+						
 				res.getNode().addChild(newNode,getDifference(value,mcp));
 				res.getNode().setAsNotLeaf();
 			}
 		}else{
+			if(res.getIndex()==value.length()){
+				res.getEdge().getEndNode().addOccurrence(indexInText);
+				return;	
+			}
+			
 			Node newNode = new Node();
 			
 			Edge edgeToSplit = res.getEdge();
@@ -55,17 +50,16 @@ public class PatriciaTree {
 					edgeToSplit.getValue().substring(res.getIndex(),edgeToSplit.getValue().length()));			
 			
 			Node wordNode = new Node();
-			newNode.addChild(wordNode,getDifference(value,res.getStringFound()));
+			newNode.addChild(wordNode,value.substring(res.getIndex(), value.length()));
 			wordNode.addOccurrence(indexInText);
 			wordNode.setAsLeaf();
+
 		}
 	}
 	
 	private String getDifference(String p, String mcp){
 		int endIndex = mcp.length();
-		//System.out.println(endIndex);
-		//System.out.println(p + "   " + p.length());
-		
+
 		return p.substring(endIndex, p.length());
 	}
 	
@@ -85,10 +79,10 @@ public class PatriciaTree {
 		int lengthFound = 0;
 		LookupRes returnValue = new LookupRes();
 		
-		while(traverse!= null && !traverse.isLeaf()){
+		while(traverse!= null){
 			
 			String substringToFind = pattern.substring(lengthFound, pattern.length());
-								
+			
 			if(substringToFind.length()==0){
 				returnValue.setNode(traverse);
 				return returnValue;
@@ -97,7 +91,6 @@ public class PatriciaTree {
 			PrefixRes res = traverse.getChildFromPrefix(substringToFind);
 						
 			if(res.getEdge()==null){
-				System.out.println("no encontre arista");
 				returnValue.setNode(traverse);
 				return returnValue;
 			}else{
@@ -111,8 +104,7 @@ public class PatriciaTree {
 				}
 			}
 		}
-		
-		//System.out.println("hoja?");
+
 		returnValue.setNode(traverse);
 		return returnValue;	
 	}
@@ -126,11 +118,9 @@ public class PatriciaTree {
 			Edge nextEdge = traverse.getEdge(pattern.substring(lengthFound,pattern.length()));
 			
 			if(nextEdge!=null){
-				//System.out.println(nextEdge.getValue());
 				traverse = nextEdge.getEndNode();
 				lengthFound = lengthFound + nextEdge.getSubstringLength();
 			}else{
-				//System.out.println("aqui :C");
 				traverse = null;
 			}		
 		}
