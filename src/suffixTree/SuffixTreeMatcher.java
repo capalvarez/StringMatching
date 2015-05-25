@@ -2,55 +2,42 @@ package suffixTree;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import preprocessing.BookPreProcess;
 import readers.BookReader;
-import automata.AutomataMatcher;
 
 public class SuffixTreeMatcher {
 	String text;
-	SuffixTree tree;
+	SuffixTree suffixTree;
 	
 	public SuffixTreeMatcher(String text){
-		tree = new SuffixTree(text);
+		this.text = text;
+		suffixTree = new SuffixTree(text);
 	}
 	
 	public Integer[] getMatchIndex(String pattern){
-		ArrayList<Integer> indexList = tree.search(pattern);
-		
-		Integer[] iArray = new Integer[indexList.size()];
-		iArray = indexList.toArray(iArray);
-		
-		return iArray;
+		return suffixTree.search(pattern);
 	}
 	
-	public static void main(String[] args) throws IOException{
-		//BookReader bR = new BookReader(new File("./data/ejemplo.txt"));
-		//BookPreProcess bPP = new BookPreProcess(bR.getBook());
-		SuffixTreeMatcher sTM = new SuffixTreeMatcher("nonsense");
-		Node root = sTM.tree.root;
-		//Node firstChild = root.findEdge('e').getEndNode();
+	public static void main(String[] args) throws IOException{	
+		BookReader bR = new BookReader(new File("./data/ejemplo.txt"));
+		BookPreProcess bPP = new BookPreProcess(bR.getBook());
+		SuffixTreeMatcher stm = new SuffixTreeMatcher("banane");
+	
+		Map<Character,Node> children = stm.suffixTree.treeRoot.getChildren();
 		
-		//System.out.println(firstChild.printSubstring("nonsense"));
-		//Collection<Edge> children = firstChild.getEdges();
-		//System.out.println(children.size());
 		
-		/*for (Iterator<Edge> it = children.iterator(); it.hasNext(); ){
-		    System.out.println(it.next().printSubstring("nonsense"));
+		
+		/*Integer[] indexes = stm.getMatchIndex("abyss");
+
+		for(int i = 0;i<indexes.length;i++){
+			System.out.println(indexes[i]);
 		}*/
-		
-		
-		
-		Integer[] app = sTM.getMatchIndex("se");
-		/*for(int i=0;i<app.length;i++){
-			System.out.println(app[i]);
-		}*/
-			
+	
 	}
+	
+	
 	
 	
 }
