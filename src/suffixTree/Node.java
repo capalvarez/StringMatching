@@ -21,15 +21,22 @@ public class Node {
 	}
 
 	public boolean isRoot(){
-		return startIndex<0 && endIndex<0;
+		return startIndex<0;
 	}
 	
 	public boolean isLeaf(){
 		return suffixIndex>0;
 	}
 	
-	public int getEdgeLength(){
-		return endIndex - startIndex + 1;
+	public int getEdgeLength(int leafEnd){
+		if(endIndex==-1 && startIndex!=-1){
+			return leafEnd - startIndex + 1;
+		}else if(this.isRoot()){
+			return 0;
+		}else{
+			return endIndex - startIndex + 1;
+		}
+		
 	}
 	
 	public int getStartIndex(){

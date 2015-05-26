@@ -22,7 +22,7 @@ public class SuffixTree {
 	}
 		
 	private boolean walkDown(Node currentNode){
-		int length = currentNode.getEdgeLength();
+		int length = currentNode.getEdgeLength(leafEnd);
 		
 		if(length<=activeLength){
 			activeEdge = activeEdge + length;
@@ -36,7 +36,7 @@ public class SuffixTree {
 	}
 	
 	private void extendPhase(int i){
-		leafEnd++;
+		leafEnd = i;
 		remainingSuffixCount++;
 		lastNewNode = null;
 		
@@ -45,16 +45,16 @@ public class SuffixTree {
 				activeEdge = i;
 			}
 		
-			if(activeNode.findChild(text.charAt(i))==null){
+			if(activeNode.findChild(text.charAt(activeEdge))==null){
 				Node newNode = new Node(i,-1,treeRoot);
-				activeNode.addChild(text.charAt(i), newNode);
+				activeNode.addChild(text.charAt(activeEdge), newNode);
 			
 				if(lastNewNode!=null){
 					lastNewNode.setSuffixLink(activeNode);
 					lastNewNode = null;
 				}
 			}else{
-				Node nextNode = activeNode.findChild(text.charAt(i));
+				Node nextNode = activeNode.findChild(text.charAt(activeEdge));
 				
 				if(walkDown(nextNode)){
 					continue;
@@ -71,8 +71,16 @@ public class SuffixTree {
 				}
 				
 				splitIndex = nextNode.getStartIndex() + activeLength - 1;
-				
-				Node newNode = new Node(nextNode.getStartIndex(),splitIndex,treeRoot);
+				//System.out.println("activeLength" + activeLength );
+				//System.out.println("splitIndex" + splitIndex);
+				//System.out.println("startIndex" + nextNode.getStartIndex());
+				Node newNode;
+				if(activeLength>0){
+					newNode = new Node(nextNode.getStartIndex(),splitIndex,treeRoot);
+				}else{
+					newNode = new Node(splitIndex,nextNode.getStartIndex(),treeRoot);
+				}
+								
 				activeNode.addChild(text.charAt(activeEdge), newNode);
 				
 				Node splitChild = new Node(i,-1,treeRoot);
@@ -103,7 +111,8 @@ public class SuffixTree {
 		treeRoot = new Node(-1,-1,null);
 		activeNode = treeRoot;
 		
-		for(int i=0;i<text.length();i++){
+		for(int i=0;i<20;i++){
+		//for(int i=0;i<text.length();i++){
 			extendPhase(i);
 		}
 		
@@ -120,7 +129,7 @@ public class SuffixTree {
 		
 		for(Character c: children.keySet()){
 			Node child = children.get(c);
-			finishSuffixTree(child,labelHeight + child.getEdgeLength());
+			finishSuffixTree(child,labelHeight + child.getEdgeLength(leafEnd));
 			
 			currentIsLeaf = false;
 		}
@@ -132,13 +141,13 @@ public class SuffixTree {
 	}
 	
 	private int traverseEdge(String pattern,int patternIndex, int start, int end){
-		for(int k = start; k<=end && text.charAt(patternIndex)!='\0';k++, patternIndex++){
+		for(int k = start; k<=end && patternIndex<pattern.length();k++, patternIndex++){
 			if(pattern.charAt(patternIndex)!=text.charAt(k)){
 				return -1;
 			}
 		}
 		
-		if(pattern.charAt(patternIndex)=='\0'){
+		if(patternIndex==pattern.length()){
 			return 1;
 		}
 		
@@ -186,7 +195,12 @@ public class SuffixTree {
 			}
 		}
 		
-		patternIndex = patternIndex + n.getEdgeLength(); 
+		patternIndex = patternIndex + n.getEdgeLength(leafEnd); 
+		
+		System.out.println("para este nodo, busco el caracter " + pattern.charAt(patternIndex));
+		for(Character c: n.getChildren().keySet()){
+			System.out.println(c);
+		}
 		
 		Node child = n.findChild(pattern.charAt(patternIndex));
 		if(child!=null){
