@@ -149,57 +149,68 @@ public class SuffixTree {
 		return 0;
 	}
 	
-	private void searchInLeaves(Node n,ArrayList<Integer> returnValue){		
+	private ArrayList<Integer> searchInLeaves(Node n){
+		ArrayList<Integer> returnValue = new ArrayList<Integer>();
+		
 		if(n==null){
-			return;
+			return returnValue;
 		}
 		
 		if(n.isLeaf()){
 			returnValue.add(n.getSuffixIndex());
-			return;
+			
+			return returnValue;
 		}
 		
 		Map<Character,Node> children = n.getChildren();
 		for(Character c: children.keySet()){
-			searchInLeaves(children.get(c),returnValue);
-		}	
+			returnValue.addAll(searchInLeaves(children.get(c)));
+		}
+		
+		return returnValue;
 	}
 	
-	private void searchInNode(Node n, String pattern, int patternIndex, ArrayList<Integer> returnValue){
+	private ArrayList<Integer> searchInNode(Node n, String pattern, int patternIndex){
+		ArrayList<Integer> returnValue = new ArrayList<Integer>();
 		if(n==null){
-			return;
+			return null;
 		}
 		
 		if(!n.isRoot()){
 			int res = traverseEdge(pattern,patternIndex,n.getStartIndex(),n.getEndIndex());
 			if(res<0){
-				return;
+				return null;
 			}else if(res>0){
 				if(n.isLeaf()){
 					returnValue.add(n.getSuffixIndex());
-					return;
+					return returnValue;
 				}else{
-					searchInLeaves(n,returnValue);
-					return;
+					return searchInLeaves(n);
 				}
 			}
 		}
 		
 		patternIndex = patternIndex + n.getEdgeLength(leafEnd); 
-				
+
 		Node child = n.findChild(pattern.charAt(patternIndex));
 		if(child!=null){
-			searchInNode(child,pattern,patternIndex,returnValue);
+			return searchInNode(child,pattern,patternIndex);
+		}else{
+			return null;
 		}
 	}
 	
 	public Integer[] search(String pattern){
-		ArrayList<Integer> iList = new ArrayList<Integer>();
-		searchInNode(treeRoot,pattern,0,iList);
+		ArrayList<Integer> iList = searchInNode(treeRoot,pattern,0);
 	
-		Integer[] iArray = new Integer[iList.size()];
-		iArray = iList.toArray(iArray);
+		if(iList!=null){
+			Integer[] iArray = new Integer[iList.size()];
+			iArray = iList.toArray(iArray);
 			
-		return iArray;
-	}	
+			return iArray;
+		}else{
+			return null;
+		}
+		
+	}
 }
