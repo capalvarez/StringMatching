@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import readers.BookReader;
 
@@ -21,7 +22,10 @@ public class BookPreProcess {
 	
 	private void preprocess(String book){
 		book = book.toLowerCase();
-		book = Normalizer.normalize(book, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+	    String normalized = Normalizer.normalize(book, Normalizer.Form.NFD);
+	    
+	    Pattern pattern = Pattern.compile("\\p{M}+");
+	    book = pattern.matcher(normalized).replaceAll(""); 	
 				
 		ArrayList<Character> bookChar = new ArrayList<Character>(Arrays.asList(toCharacter(book.toCharArray())));
 			
@@ -62,10 +66,10 @@ public class BookPreProcess {
 	}
 	
 	public static void main(String[] args) throws IOException{
-		BookReader bR = new BookReader(new File("./data/ejemplo.txt"));
+		BookReader bR = new BookReader(new File("./data/gabriel_garcia_marquez.txt"));
 		BookPreProcess bPP = new BookPreProcess(bR.getBook());
 		
-		System.out.println(bPP.getProcessedBook());
+		System.out.println(bPP.getProcessedBook().substring(0,50000));
 		
 	}
 }

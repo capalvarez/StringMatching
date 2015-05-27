@@ -10,18 +10,32 @@ import preprocessing.BookPreProcess;
 import readers.BookReader;
 
 public class AutomataMatcher {
-	String text;
+	private String text;
+	private long automataTime;
+	private long searchTime;
 	
 	public AutomataMatcher(String t){
 		text = t; 
+	}
+	
+	public long getAutomataTime(){
+		return automataTime;
+	}
+	
+	public long getSearchTime(){
+		return searchTime;
 	}
 	
 	public Integer[] getMatchIndex(String pattern){
 		Character[] chars = getCharacterAlpha();
 		ArrayList<Character> alphabet = new ArrayList<Character>(Arrays.asList(chars));
 		
+		long startAutomata = System.currentTimeMillis();
 		int[][] deltaFunction = (new AutomataConstructor(pattern,alphabet)).getDeltaFunction();
-				
+		long endAutomata = System.currentTimeMillis();
+		
+		automataTime = endAutomata - startAutomata;
+		
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		
 		int m = pattern.length();
@@ -39,6 +53,8 @@ public class AutomataMatcher {
 		
 		Integer[] iArray = new Integer[indexList.size()];
 		iArray = indexList.toArray(iArray);
+		
+		searchTime = System.currentTimeMillis() - endAutomata;
 		
 		return iArray;
 	}
