@@ -29,14 +29,13 @@ public class Node {
 	}
 	
 	public int getEdgeLength(int leafEnd){
-		if(endIndex==-1 && startIndex!=-1){
+		if(endIndex==-1 && !this.isRoot()){
 			return leafEnd - startIndex + 1;
 		}else if(this.isRoot()){
 			return 0;
 		}else{
 			return endIndex - startIndex + 1;
-		}
-		
+		}	
 	}
 	
 	public int getStartIndex(){
@@ -56,7 +55,7 @@ public class Node {
 	}
 	
 	public void addChild(char charToAdd, Node child) {
-		children.put(charToAdd, child);
+			children.put(charToAdd, child);		
 	}
 
 	public Node findChild(char ch) {

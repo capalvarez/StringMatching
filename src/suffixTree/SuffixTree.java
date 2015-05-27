@@ -24,7 +24,7 @@ public class SuffixTree {
 	private boolean walkDown(Node currentNode){
 		int length = currentNode.getEdgeLength(leafEnd);
 		
-		if(length<=activeLength){
+		if(activeLength>=length){
 			activeEdge = activeEdge + length;
 			activeLength = activeLength - length;
 			activeNode = currentNode;		
@@ -40,15 +40,15 @@ public class SuffixTree {
 		remainingSuffixCount++;
 		lastNewNode = null;
 		
-		while(remainingSuffixCount>0){
+		while(remainingSuffixCount>0){			
 			if(activeLength==0){
 				activeEdge = i;
 			}
 		
-			if(activeNode.findChild(text.charAt(activeEdge))==null){
+			if(activeNode.findChild(text.charAt(activeEdge))==null){				
 				Node newNode = new Node(i,-1,treeRoot);
 				activeNode.addChild(text.charAt(activeEdge), newNode);
-			
+							
 				if(lastNewNode!=null){
 					lastNewNode.setSuffixLink(activeNode);
 					lastNewNode = null;
@@ -59,41 +59,35 @@ public class SuffixTree {
 				if(walkDown(nextNode)){
 					continue;
 				}
-				
+			
 				if(text.charAt(i)==text.charAt(nextNode.getStartIndex() + activeLength)){
-					if(lastNewNode!=null && !activeNode.isRoot()){
+	
+					if(lastNewNode!=null){
 						lastNewNode.setSuffixLink(activeNode);
 						lastNewNode = null;
 					}
-					
+				
 					activeLength++;
 					break;
 				}
-				
+			
 				splitIndex = nextNode.getStartIndex() + activeLength - 1;
-				//System.out.println("activeLength" + activeLength );
-				//System.out.println("splitIndex" + splitIndex);
-				//System.out.println("startIndex" + nextNode.getStartIndex());
-				Node newNode;
-				if(activeLength>0){
-					newNode = new Node(nextNode.getStartIndex(),splitIndex,treeRoot);
-				}else{
-					newNode = new Node(splitIndex,nextNode.getStartIndex(),treeRoot);
-				}
-								
+				
+				Node newNode = new Node(nextNode.getStartIndex(),splitIndex,treeRoot);
+							
 				activeNode.addChild(text.charAt(activeEdge), newNode);
 				
 				Node splitChild = new Node(i,-1,treeRoot);
 				newNode.addChild(text.charAt(i),splitChild);
 								
-				nextNode.setStartIndex(nextNode.getStartIndex() + activeLength);
+				nextNode.setStartIndex(splitIndex+1);
 				newNode.addChild(text.charAt(nextNode.getStartIndex()),nextNode);
 				
 				if(lastNewNode!=null){
-					lastNewNode.setSuffixLink(splitChild);
+					lastNewNode.setSuffixLink(newNode);
 				}
 				
-				lastNewNode = splitChild;
+				lastNewNode = newNode;
 				
 			}
 			
@@ -104,18 +98,19 @@ public class SuffixTree {
 			}else if(!activeNode.isRoot()){
 				activeNode = activeNode.getSuffixLink();
 			}
-		}
+			
+		}		
 	}
 	
 	private void buildSuffixTree(){
 		treeRoot = new Node(-1,-1,null);
 		activeNode = treeRoot;
 		
-		for(int i=0;i<20;i++){
-		//for(int i=0;i<text.length();i++){
+	    //for(int i=0;i<42;i++){
+		for(int i=0;i<text.length();i++){
 			extendPhase(i);
 		}
-		
+
 		finishSuffixTree(treeRoot,0);
 	}
 	
@@ -154,74 +149,57 @@ public class SuffixTree {
 		return 0;
 	}
 	
-	private ArrayList<Integer> searchInLeaves(Node n){
-		ArrayList<Integer> returnValue = new ArrayList<Integer>();
-		
+	private void searchInLeaves(Node n,ArrayList<Integer> returnValue){		
 		if(n==null){
-			return returnValue;
+			return;
 		}
 		
 		if(n.isLeaf()){
 			returnValue.add(n.getSuffixIndex());
-			
-			return returnValue;
+			return;
 		}
 		
 		Map<Character,Node> children = n.getChildren();
 		for(Character c: children.keySet()){
-			returnValue.addAll(searchInLeaves(children.get(c)));
-		}
-		
-		return returnValue;
+			searchInLeaves(children.get(c),returnValue);
+		}	
 	}
 	
-	private ArrayList<Integer> searchInNode(Node n, String pattern, int patternIndex){
-		ArrayList<Integer> returnValue = new ArrayList<Integer>();
+	private void searchInNode(Node n, String pattern, int patternIndex, ArrayList<Integer> returnValue){
 		if(n==null){
-			return null;
+			return;
 		}
 		
 		if(!n.isRoot()){
 			int res = traverseEdge(pattern,patternIndex,n.getStartIndex(),n.getEndIndex());
 			if(res<0){
-				return null;
+				return;
 			}else if(res>0){
 				if(n.isLeaf()){
 					returnValue.add(n.getSuffixIndex());
-					return returnValue;
+					return;
 				}else{
-					return searchInLeaves(n);
+					searchInLeaves(n,returnValue);
+					return;
 				}
 			}
 		}
 		
 		patternIndex = patternIndex + n.getEdgeLength(leafEnd); 
-		
-		System.out.println("para este nodo, busco el caracter " + pattern.charAt(patternIndex));
-		for(Character c: n.getChildren().keySet()){
-			System.out.println(c);
-		}
-		
+				
 		Node child = n.findChild(pattern.charAt(patternIndex));
 		if(child!=null){
-			return searchInNode(child,pattern,patternIndex);
-		}else{
-			return null;
+			searchInNode(child,pattern,patternIndex,returnValue);
 		}
 	}
 	
 	public Integer[] search(String pattern){
-		ArrayList<Integer> iList = searchInNode(treeRoot,pattern,0);
+		ArrayList<Integer> iList = new ArrayList<Integer>();
+		searchInNode(treeRoot,pattern,0,iList);
 	
-		if(iList!=null){
-			Integer[] iArray = new Integer[iList.size()];
-			iArray = iList.toArray(iArray);
+		Integer[] iArray = new Integer[iList.size()];
+		iArray = iList.toArray(iArray);
 			
-			return iArray;
-		}else{
-			return null;
-		}
-		
-	}
-	
+		return iArray;
+	}	
 }
