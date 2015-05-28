@@ -16,24 +16,24 @@ public class BookPreProcess {
 	public BookPreProcess(String book){
 		char[] forb = "@.,;:-_|°¬!#$%&/()=\t\b\n\'\"\\?¡¿+*~[]{}^-_—".toCharArray();
 		forbidden = new ArrayList<Character>(Arrays.asList(toCharacter(forb)));	
-		
+			
 		preprocess(book);	
 	}
 	
 	private void preprocess(String book){
 		book = book.toLowerCase();
-	    String normalized = Normalizer.normalize(book, Normalizer.Form.NFD);
-	    
-	    Pattern pattern = Pattern.compile("\\p{M}+");
-	    book = pattern.matcher(normalized).replaceAll(""); 	
+		
+		String newBook = Normalizer.normalize(book, Normalizer.Form.NFD); 
+	    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+	    newBook = pattern.matcher(newBook).replaceAll("");
 				
-		ArrayList<Character> bookChar = new ArrayList<Character>(Arrays.asList(toCharacter(book.toCharArray())));
+		ArrayList<Character> bookChar = new ArrayList<Character>(Arrays.asList(toCharacter(newBook.toCharArray())));
 			
 		for(int i=0; i<bookChar.size();i++){
-
+			
 			if(forbidden.contains(bookChar.get(i))){
 				bookChar.set(i,null);
-			}
+			}			
 		}
 						
 		finishedBook = getString(bookChar);
@@ -69,7 +69,7 @@ public class BookPreProcess {
 		BookReader bR = new BookReader(new File("./data/gabriel_garcia_marquez.txt"));
 		BookPreProcess bPP = new BookPreProcess(bR.getBook());
 		
-		System.out.println(bPP.getProcessedBook().substring(0,50000));
+		System.out.println(bPP.getProcessedBook().substring(0,5000));
 		
 	}
 }
